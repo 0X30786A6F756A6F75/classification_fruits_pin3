@@ -2,27 +2,19 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import accuracy_score, confusion_matrix
-from sklearn import tree
+from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import minmax_scale
 from sklearn.preprocessing import LabelEncoder 
-from sklearn.naive_bayes import GaussianNB 
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.svm import SVC 
-from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.model_selection import train_test_split
 
 def main():
-    # Loading data file 
     data = pd.read_csv('./frutas.csv', sep=',', header=0)
-
-    # get the target values
     data["classe"].unique()
     X = data.drop(['classe'], axis =1)
     Y = data['classe']
-    # get the type of X
     type(X)
 
     X = minmax_scale(X)
@@ -36,6 +28,7 @@ def main():
     lbl = LabelEncoder()
     lbl.fit_transform(Y)
 
+    # View the array
     view_table(X,Y)
 
     # Split the data into training and testing sets
@@ -58,10 +51,10 @@ def train_model(X,Y):
         
         y_pred = model.predict(X_test)
         
-        print(f"Model: {model.__class__.__name__}")
-        print("Confusion Matrix:")
+        print(f"Algoritmo: {model.__class__.__name__}")
+        print("Matriz de Confusão")
         print(confusion_matrix(y_test, y_pred))
-        print("\nClassification Report:")
+        print("\n Relatório de Classificação")
         print(classification_report(y_test, y_pred))
         print("--------------------------------------------------------")
 
