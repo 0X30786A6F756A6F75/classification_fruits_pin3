@@ -40,23 +40,36 @@ def view_table(X, Y):
 
 def train_model(X,Y):
     X_train, X_test, y_train, y_test = train_test_split(X,Y, test_size=0.3, random_state=42, shuffle=True, stratify=None)
+    treeClassifier(X_train, X_test, y_train, y_test)
+    randomForestClassifier(X_train, X_test, y_train, y_test)
 
-    # Train the model
-    models = [
-        DecisionTreeClassifier(),  
-        RandomForestClassifier()  
-    ]
-    for model in models : 
-        model.fit (X_train , y_train )
-        
-        y_pred = model.predict(X_test)
-        
-        print(f"Algoritmo: {model.__class__.__name__}")
-        print("Matriz de Confusão")
-        print(confusion_matrix(y_test, y_pred))
-        print("\n Relatório de Classificação")
-        print(classification_report(y_test, y_pred))
-        print("--------------------------------------------------------")
+
+def treeClassifier(X_train, X_test, y_train, y_test) :
+    model =  DecisionTreeClassifier()  
+    model.fit (X_train , y_train )
+    
+    y_pred = model.predict(X_test)
+    
+    print(f"Algoritmo: {model.__class__.__name__}")
+    print("Matriz de Confusão")
+    print(confusion_matrix(y_test, y_pred))
+    print("\n Relatório de Classificação")
+    print(classification_report(y_test, y_pred))
+    print("--------------------------------------------------------")
+
+def randomForestClassifier(X_train, X_test, y_train, y_test) :
+    model =  RandomForestClassifier()  
+    model.fit (X_train , y_train )
+    
+    y_pred = model.predict(X_test)
+    
+    print(f"Algoritmo: {model.__class__.__name__}")
+    print("Matriz de Confusão")
+    print(confusion_matrix(y_test, y_pred))
+    print("\n Relatório de Classificação")
+    print(classification_report(y_test, y_pred))
+    print("--------------------------------------------------------")
+    
 
 if __name__ == "__main__":
     main()
