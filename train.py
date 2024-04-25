@@ -9,46 +9,50 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.model_selection import train_test_split
+from imblearn.under_sampling import RandomUnderSampler
 
 def main():
     data = pd.read_csv('./frutas.csv', sep=',', header=0)
     data["classe"].unique()
-    X = data.drop(['classe'], axis =1)
-    Y = data['classe']
-    type(X)
+    x = data.drop(['classe'], axis =1)
+    y = data['classe']
 
-    X = minmax_scale(X)
-    print(X)
+    x = minmax_scale(x)
+    print(x)
 
     # View table
-    X = pd.DataFrame(X)
-    X.sample(5)
+    x = pd.DataFrame(x)
+    x.sample(5)
+    print(x)
 
     # View the array
     lbl = LabelEncoder()
-    lbl.fit_transform(Y)
+    lbl.fit_transform(y)
 
     # View the array
-    view_table(X,Y)
+    view_table(x,y)
 
     # Split the data into training and testing sets
-    train_model(X,Y)
+    train_model(x,y)
 
-def view_table(X, Y):
-    print(X)
-    print(Y)
+def view_table(x, y):
+    print(x)
+    print(y)
 
-def train_model(X,Y):
-    X_train, X_test, y_train, y_test = train_test_split(X,Y, test_size=0.3, random_state=42, shuffle=True, stratify=None)
-    treeClassifier(X_train, X_test, y_train, y_test)
-    randomForestClassifier(X_train, X_test, y_train, y_test)
+def train_model(x,y):
+    rus = RandomUnderSampler(sampling_strategy='majority', replacement=True, random_state=None)
+    x_resampled, y_resampled = rus.fit_resample(x,y)
+
+    x_train, x_test, y_train, y_test = train_test_split(x_resampled, y_resampled, test_size=0.3, random_state=42, shuffle=True, stratify=None)
+    treeClassifier(x_train, x_test, y_train, y_test)
+    randomForestClassifier(x_train, x_test, y_train, y_test)
 
 
-def treeClassifier(X_train, X_test, y_train, y_test) :
-    model =  DecisionTreeClassifier()  
-    model.fit (X_train , y_train )
+def treeClassifier(x_train, x_test, y_train, y_test) :
+    model =  DecisionTreeClassifier(random_state=42, max_depth=None, criterion='gini', splitter='best')
+    model.fit(x_train , y_train)
     
-    y_pred = model.predict(X_test)
+    y_pred = model.predict(x_test)
     
     print(f"Algoritmo: {model.__class__.__name__}")
     print("Matriz de Confusão")
@@ -57,11 +61,11 @@ def treeClassifier(X_train, X_test, y_train, y_test) :
     print(classification_report(y_test, y_pred))
     print("--------------------------------------------------------")
 
-def randomForestClassifier(X_train, X_test, y_train, y_test) :
-    model =  RandomForestClassifier()  
-    model.fit (X_train , y_train )
+def randomForestClassifier(x_train, x_test, y_train, y_test) :
+    model =  RandomForestClassifier(n_estimators=100, random_state=42, max_depth=None, criterion='gini')
+    model.fit(x_train , y_train)
     
-    y_pred = model.predict(X_test)
+    y_pred = model.predict(x_test)
     
     print(f"Algoritmo: {model.__class__.__name__}")
     print("Matriz de Confusão")
