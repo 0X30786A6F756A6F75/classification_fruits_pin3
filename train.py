@@ -10,6 +10,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.model_selection import train_test_split
 from imblearn.under_sampling import RandomUnderSampler
+from sklearn.model_selection import GridSearchCV
 
 def main():
     data = pd.read_csv('./frutas.csv', sep=',', header=0)
@@ -42,14 +43,39 @@ def view_table(x, y):
 def train_model(x,y):
     rus = RandomUnderSampler(sampling_strategy='majority', replacement=True, random_state=None)
     x_resampled, y_resampled = rus.fit_resample(x,y)
-
+    print("Original Dataset Shape:")
+    print(x.shape)
+    print("Resampled Dataset:")
+    print(x_resampled.shape)
     x_train, x_test, y_train, y_test = train_test_split(x_resampled, y_resampled, test_size=0.3, random_state=42, shuffle=True, stratify=None)
     treeClassifier(x_train, x_test, y_train, y_test)
     randomForestClassifier(x_train, x_test, y_train, y_test)
 
 
-def treeClassifier(x_train, x_test, y_train, y_test) :
+def treeClassifier(x_train, x_test, y_train, y_test) :   
     model =  DecisionTreeClassifier(random_state=42, max_depth=None, criterion='gini', splitter='best')
+    param_grid_dt = {
+    'criterion': ['gini', 'entropy'],
+    'splitter': ['best', 'random'],
+    'max_depth': [None, 10, 20, 30],
+    'min_samples_split': [2, 5, 10],
+    'min_samples_leaf': [1, 2, 4]
+    }
+
+    grid_search_dt = GridSearchCV(estimator=DecisionTreeClassifier(), param_grid=param_grid_dt, cv=5, scoring='accuracy', n_jobs=-1)
+
+    grid_search_dt.fit(x_train, y_train)
+    
+    print("Grid for the Decision Tree")
+    print(" ")
+    print("Best Hyperparameters:")
+    print(grid_search_dt.best_params_)
+    print(" ")
+    print("Performance on the Validation Set:")
+    print(grid_search_dt.best_score_)
+    print(" ")
+
+
     model.fit(x_train , y_train)
     
     y_pred = model.predict(x_test)
@@ -62,7 +88,25 @@ def treeClassifier(x_train, x_test, y_train, y_test) :
     print("--------------------------------------------------------")
 
 def randomForestClassifier(x_train, x_test, y_train, y_test) :
-    model =  RandomForestClassifier(n_estimators=100, random_state=42, max_depth=None, criterion='gini')
+    model = RandomForestClassifier(n_estimators=100, random_state=42, max_depth=None, criterion='gini')
+
+    param_grid = {
+    'n_estimators': [100, 200, 300],
+    'max_depth': [None, 10, 20, 30],
+    'min_samples_split': [2, 5, 10],
+    'min_samples_leaf': [1, 2, 4]
+    }
+
+    grid_search = GridSearchCV(model, param_grid=param_grid, cv=5, scoring='accuracy', n_jobs=1)
+    grid_search.fit(x_train,y_train)
+    print("Grid for the RandomForest")
+    print(" ")
+    print("Best Hyperparameters:")
+    print(grid_search.best_params_)
+    print(" ")
+    print("Performance on the Validation Set:")
+    print(grid_search.best_score_)
+    print(" ")
     model.fit(x_train , y_train)
     
     y_pred = model.predict(x_test)
