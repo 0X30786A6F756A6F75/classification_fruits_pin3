@@ -95,8 +95,8 @@ def randomForestClassifier(x_train, x_test, y_train, y_test) :
 
     param_grid = {
         'criterion': ['gini', 'entropy'],
-        'bootstrap' : [True, False],
-        'max_features': ['auto', 'sqrt', 'log2'],
+        # 'bootstrap' : [True, False],
+        # 'max_features': ['auto'],
         'n_estimators': [100, 200, 300],
         'max_depth': [None, 10, 20, 30],
         'min_samples_split': [2, 5, 10],
