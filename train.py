@@ -11,6 +11,7 @@ from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.model_selection import train_test_split
 from imblearn.under_sampling import RandomUnderSampler
 from sklearn.model_selection import GridSearchCV
+from joblib import dump,load
 
 def main():
     data = pd.read_csv('./frutas.csv', sep=',', header=0)
@@ -47,19 +48,19 @@ def train_model(x,y):
     print(x.shape)
     print("Resampled Dataset:")
     print(x_resampled.shape)
-    x_train, x_test, y_train, y_test = train_test_split(x_resampled, y_resampled, test_size=0.3, random_state=42, shuffle=True, stratify=None)
+    x_train, x_test, y_train, y_test = train_test_split(x_resampled, y_resampled, test_size=0.3, random_state=None, shuffle=True, stratify=None)
     treeClassifier(x_train, x_test, y_train, y_test)
     randomForestClassifier(x_train, x_test, y_train, y_test)
 
 
 def treeClassifier(x_train, x_test, y_train, y_test) :   
-    model =  DecisionTreeClassifier(random_state=42, max_depth=None, criterion='gini', splitter='best')
+    model =  DecisionTreeClassifier(max_depth=None, criterion='gini', splitter='best')
     param_grid_dt = {
-    'criterion': ['gini', 'entropy'],
-    'splitter': ['best', 'random'],
-    'max_depth': [None, 10, 20, 30],
-    'min_samples_split': [2, 5, 10],
-    'min_samples_leaf': [1, 2, 4]
+        'criterion': ['gini', 'entropy'],
+        'splitter': ['best', 'random'],
+        'max_depth': [None, 10, 20, 30],
+        'min_samples_split': [2, 5, 10],
+        'min_samples_leaf': [1, 2, 4]
     }
 
     grid_search_dt = GridSearchCV(estimator=DecisionTreeClassifier(), param_grid=param_grid_dt, cv=5, scoring='accuracy', n_jobs=-1)
@@ -75,8 +76,10 @@ def treeClassifier(x_train, x_test, y_train, y_test) :
     print(grid_search_dt.best_score_)
     print(" ")
 
-
     model.fit(x_train , y_train)
+
+    # save the model in file
+    dump(model, 'treeClassifierModel.joblib')
     
     y_pred = model.predict(x_test)
     
@@ -88,13 +91,16 @@ def treeClassifier(x_train, x_test, y_train, y_test) :
     print("--------------------------------------------------------")
 
 def randomForestClassifier(x_train, x_test, y_train, y_test) :
-    model = RandomForestClassifier(n_estimators=100, random_state=42, max_depth=None, criterion='gini')
+    model = RandomForestClassifier(n_estimators=100, max_depth=None, criterion='gini', bootstrap=True)
 
     param_grid = {
-    'n_estimators': [100, 200, 300],
-    'max_depth': [None, 10, 20, 30],
-    'min_samples_split': [2, 5, 10],
-    'min_samples_leaf': [1, 2, 4]
+        'criterion': ['gini', 'entropy'],
+        'bootstrap' : [True, False],
+        'max_features': ['auto', 'sqrt', 'log2'],
+        'n_estimators': [100, 200, 300],
+        'max_depth': [None, 10, 20, 30],
+        'min_samples_split': [2, 5, 10],
+        'min_samples_leaf': [1, 2, 4]
     }
 
     grid_search = GridSearchCV(model, param_grid=param_grid, cv=5, scoring='accuracy', n_jobs=1)
@@ -108,6 +114,9 @@ def randomForestClassifier(x_train, x_test, y_train, y_test) :
     print(grid_search.best_score_)
     print(" ")
     model.fit(x_train , y_train)
+
+    # save the model in file
+    dump(model, 'randomForestClassifierModel.joblib')
     
     y_pred = model.predict(x_test)
     
@@ -118,6 +127,9 @@ def randomForestClassifier(x_train, x_test, y_train, y_test) :
     print(classification_report(y_test, y_pred))
     print("--------------------------------------------------------")
     
+def load_model(filename):
+    loaded_model = load(filename)
+    return loaded_model
 
 if __name__ == "__main__":
     main()
