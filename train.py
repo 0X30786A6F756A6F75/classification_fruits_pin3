@@ -54,13 +54,12 @@ def train_model(x,y):
 
 
 def treeClassifier(x_train, x_test, y_train, y_test) :   
-    model =  DecisionTreeClassifier(max_depth=None, criterion='gini', splitter='best')
     param_grid_dt = {
         'criterion': ['gini', 'entropy'],
         'splitter': ['best', 'random'],
-        'max_depth': [None, 10, 20, 30],
-        'min_samples_split': [2, 5, 10],
-        'min_samples_leaf': [1, 2, 4]
+        'max_depth': [None,8, 9, 10, 11, 12],
+        'min_samples_split': [2, 3, 4, 5, 10],
+        'min_samples_leaf': [1, 2, 3, 4, 5, 6]
     }
 
     grid_search_dt = GridSearchCV(estimator=DecisionTreeClassifier(), param_grid=param_grid_dt, cv=5, scoring='accuracy', n_jobs=-1)
@@ -76,10 +75,10 @@ def treeClassifier(x_train, x_test, y_train, y_test) :
     print(grid_search_dt.best_score_)
     print(" ")
 
+    model =  DecisionTreeClassifier(**grid_search_dt.best_params_)
+
     model.fit(x_train , y_train)
 
-    # save the model in file
-    dump(model, 'treeClassifierModel.joblib')
     
     y_pred = model.predict(x_test)
     
@@ -89,21 +88,21 @@ def treeClassifier(x_train, x_test, y_train, y_test) :
     print("\n Relatório de Classificação")
     print(classification_report(y_test, y_pred))
     print("--------------------------------------------------------")
+    
+    # save the model in file
+    dump(model, 'treeClassifierModel.joblib')
 
 def randomForestClassifier(x_train, x_test, y_train, y_test) :
-    model = RandomForestClassifier(n_estimators=100, max_depth=None, criterion='gini', bootstrap=True)
 
     param_grid = {
-        'criterion': ['gini', 'entropy'],
-        # 'bootstrap' : [True, False],
-        # 'max_features': ['auto'],
-        'n_estimators': [100, 200, 300],
-        'max_depth': [None, 10, 20, 30],
-        'min_samples_split': [2, 5, 10],
-        'min_samples_leaf': [1, 2, 4]
+        'bootstrap' : [True, False],
+        'n_estimators': [95,100, 105],
+        'max_depth': [None, 8, 10, 15],
+        'min_samples_split': [2, 4, 3, 5, 6, 7],
+        'min_samples_leaf': [1, 2, 3, 4]
     }
 
-    grid_search = GridSearchCV(model, param_grid=param_grid, cv=5, scoring='accuracy', n_jobs=1)
+    grid_search = GridSearchCV(RandomForestClassifier(), param_grid=param_grid, cv=5, scoring='accuracy', n_jobs=1)
     grid_search.fit(x_train,y_train)
     print("Grid for the RandomForest")
     print(" ")
@@ -113,10 +112,10 @@ def randomForestClassifier(x_train, x_test, y_train, y_test) :
     print("Performance on the Validation Set:")
     print(grid_search.best_score_)
     print(" ")
+
+    model = RandomForestClassifier(**grid_search.best_params_)
     model.fit(x_train , y_train)
 
-    # save the model in file
-    dump(model, 'randomForestClassifierModel.joblib')
     
     y_pred = model.predict(x_test)
     
@@ -126,6 +125,9 @@ def randomForestClassifier(x_train, x_test, y_train, y_test) :
     print("\n Relatório de Classificação")
     print(classification_report(y_test, y_pred))
     print("--------------------------------------------------------")
+    
+    # save the model in file
+    dump(model, 'randomForestClassifierModel.joblib')
     
 def load_model(filename):
     loaded_model = load(filename)
