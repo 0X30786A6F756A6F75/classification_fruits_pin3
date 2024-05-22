@@ -1,94 +1,110 @@
 import { useEffect, useRef } from "react";
-import Chart from "chart.js/auto";
+import Chart, { ChartData } from "chart.js/auto";
 
-export function Graphic() {
-  let pieChartRef = useRef(null);
-  let barChartRef = useRef(null);
-  let distributionChartRef = useRef(null);
+type ChartType = 'bar' | 'line' | 'pie';
+
+interface GraphicProps { }
+
+const randomData = (length: number) => Array.from({ length }, () => Math.floor(Math.random() * 100));
+const backgroundColor = [
+  "rgba(255, 99, 132, 0.2)",
+  "rgba(54, 162, 235, 0.2)",
+  "rgba(255, 206, 86, 0.2)",
+  "rgba(75, 192, 192, 0.2)",
+  "rgba(153, 102, 255, 0.2)",
+  "rgba(255, 159, 64, 0.2)"
+];
+const borderColor = [
+  "rgba(255, 99, 132, 1)",
+  "rgba(54, 162, 235, 1)",
+  "rgba(255, 206, 86, 1)",
+  "rgba(75, 192, 192, 1)",
+  "rgba(153, 102, 255, 1)",
+  "rgba(255, 159, 64, 1)"
+];
+
+export const Graphic: React.FC<GraphicProps> = () => {
+  const barChartRef = useRef<HTMLCanvasElement>(null);
+	const distributionChartRef = useRef<HTMLCanvasElement>(null);
+  const pieChartRef = useRef<HTMLCanvasElement>(null);
+
+  const chartInstances = useRef<{ [key in ChartType]: Chart | null }>({
+    bar: null,
+    line: null,
+    pie: null
+  });
+
+  const destroyChart = (chartType: ChartType) => {
+    if (chartInstances.current[chartType]) {
+      chartInstances.current[chartType]?.destroy();
+      chartInstances.current[chartType] = null;
+    }
+  };
+
+  const initChart = (ref: React.RefObject<HTMLCanvasElement>, chartType: ChartType, data: ChartData) => {
+    const canvas = ref.current;
+    if (canvas) {
+      destroyChart(chartType);
+      chartInstances.current[chartType] = new Chart(canvas, {
+        type: chartType,
+        data,
+        options: {
+          scales: {
+            y: {
+              beginAtZero: chartType !== 'line'
+            }
+          }
+        }
+      });
+    }
+  };
 
   useEffect(() => {
     const columns = ["Berthi", "Dokol", "IRAQI", "Rotana", "Safavi", "Sogay"];
-    const randomData = () => {
-      return Array.from({ length: 7 }, () => Math.floor(Math.random() * 100));
+
+    const barChartData: ChartData = {
+      labels: columns,
+      datasets: [{
+        label: "Frutas",
+        data: randomData(columns.length),
+        backgroundColor,
+        borderColor,
+        borderWidth: 1,
+      }]
     };
 
-    const destroyChart = (chart: Chart) => {
-      chart.destroy();
+    const lineChartData: ChartData = {
+      labels: columns,
+      datasets: [{
+        label: "Frutas",
+        data: randomData(columns.length),
+        fill: false,
+        borderColor: "rgba(255, 99, 132, 1)",
+        borderWidth: 1,
+      }]
     };
 
-    let backgroundColor = [
-      "rgba(255, 99, 132, 0.2)",
-      "rgba(54, 162, 235, 0.2)",
-      "rgba(255, 206, 86, 0.2)",
-      "rgba(75, 192, 192, 0.2)",
-      "rgba(153, 102, 255, 0.2)",
-      "rgba(255, 159, 64, 0.2)"
-    ];
-    let borderColor = [
-      "rgba(255, 99, 132, 1)",
-      "rgba(54, 162, 235, 1)",
-      "rgba(255, 206, 86, 1)",
-      "rgba(75, 192, 192, 1)",
-      "rgba(153, 102, 255, 1)",
-      "rgba(255, 159, 64, 1)"
-    ];
+    const pieChartData: ChartData = {
+      labels: columns,
+      datasets: [{
+        data: [12, 19, 3, 5, 2, 3],
+        backgroundColor,
+        borderColor,
+        borderWidth: 1
+      }]
+    };
 
-    let barChartRef = new Chart("bar", {
-      type: "bar",
-      data: {
-        labels: columns,
-        datasets: [{
-          label: "Frutas",
-          data: randomData(),
-          backgroundColor: backgroundColor,
-          borderWidth: 1,
-          borderColor: borderColor,
-        }]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
+    initChart(barChartRef, 'bar', barChartData);
+    initChart(distributionChartRef, 'line', lineChartData);
+    initChart(pieChartRef, 'pie', pieChartData);
 
-    distributionChartRef = new Chart("line", distributionChartRef.current, {
-      type: "line",
-      data: {
-        labels: columns,
-        datasets: [{
-          label: "Frutas",
-          data: randomData(),
-          fill: false,
-          borderColor: "rgba(255, 99, 132, 1)",
-          borderWidth: 1,
-          borderColor: borderColor,
-        }]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: false
-          }
-        }
-      }
-    });
-
-    pieChartRef = new Chart("pie", {
-      type: "pie",
-      data: {
-        labels: columns,
-        datasets: [{
-          data: [12, 19, 3, 5, 2, 3],
-          backgroundColor: backgroundColor,
-          borderColor: borderColor,
-          borderWidth: 1
-        }]
-      }
-    });
-  }, []);
+    // Cleanup charts on component unmount
+    return () => {
+      destroyChart('bar');
+      destroyChart('line');
+      destroyChart('pie');
+    };
+  }, [initChart]);
 
   return (
     <div className="container-fluid" id="content-main">
@@ -111,6 +127,5 @@ export function Graphic() {
         </div>
       </div>
     </div>
-  );
-}
-
+		);
+};
