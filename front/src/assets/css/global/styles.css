@@ -116,3 +116,10 @@ footer {
   height: 100%!important;
   padding: 20px;
 }
+
+/* Form*/
+.table-inline {
+    display:table-cell;
+    padding-left:10px;
+    vertical-align:middle;
+}

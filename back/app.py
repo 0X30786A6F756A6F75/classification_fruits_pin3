@@ -4,8 +4,10 @@ from werkzeug.utils import secure_filename
 import joblib
 import pandas as pd
 from datetime import datetime
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 ALLOWED_EXTENSIONS = set(['csv'])
 

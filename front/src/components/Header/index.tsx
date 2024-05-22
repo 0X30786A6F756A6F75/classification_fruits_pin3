@@ -15,7 +15,7 @@ export function Header() {
         <div className="collapse navbar-collapse justify-content-end" id="navbarTogglerDemo01">
           <ul className="navbar-nav">
             <li className="nav-item">
-              <Link to="/" className="nav-link">Verificar Frutas</Link>
+              <Link to="/form" className="nav-link">Verificar Frutas</Link>
             </li>
             <li className="nav-item">
               <Link to="/graphics" className="nav-link">Graficos</Link>
