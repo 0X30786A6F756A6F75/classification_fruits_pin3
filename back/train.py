@@ -10,8 +10,11 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix, classification_report
 from sklearn.model_selection import train_test_split
 from imblearn.under_sampling import RandomUnderSampler
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import RandomizedSearchCV, cross_val_score
 from joblib import dump,load
+import seaborn as sns
+import matplotlib.pyplot as plt
+from imblearn.over_sampling import SMOTE
 
 def main():
     data = pd.read_csv('./frutas.csv', sep=',', header=0)
@@ -42,8 +45,10 @@ def view_table(x, y):
     print(y)
 
 def train_model(x,y):
-    rus = RandomUnderSampler(sampling_strategy='majority', replacement=True, random_state=None)
-    x_resampled, y_resampled = rus.fit_resample(x,y)
+    smote = SMOTE(sampling_strategy='auto', random_state=None)
+    # rus = RandomUnderSampler(sampling_strategy='majority', replacement=True, random_state=None)
+    # x_resampled, y_resampled = rus.fit_resample(x,y)
+    x_resampled, y_resampled = smote.fit_resample(x,y)
     print("Original Dataset Shape:")
     print(x.shape)
     print("Resampled Dataset:")
@@ -57,12 +62,12 @@ def treeClassifier(x_train, x_test, y_train, y_test) :
     param_grid_dt = {
         'criterion': ['gini', 'entropy'],
         'splitter': ['best', 'random'],
-        'max_depth': [None,8, 9, 10, 11, 12],
-        'min_samples_split': [2, 3, 4, 5, 10],
-        'min_samples_leaf': [1, 2, 3, 4, 5, 6]
+        'max_depth': [None, 8, 9, 10, 11, 12, 15, 20],
+        'min_samples_split': [2, 3, 4, 5, 10, 15],
+        'min_samples_leaf': [2, 3, 4, 5, 6, 10]
     }
 
-    grid_search_dt = GridSearchCV(estimator=DecisionTreeClassifier(), param_grid=param_grid_dt, cv=5, scoring='accuracy', n_jobs=-1)
+    grid_search_dt = RandomizedSearchCV(estimator=DecisionTreeClassifier(), param_distributions=param_grid_dt, n_iter=100, cv=5, scoring='accuracy', n_jobs=-1)
 
     grid_search_dt.fit(x_train, y_train)
     
@@ -79,15 +84,30 @@ def treeClassifier(x_train, x_test, y_train, y_test) :
 
     model.fit(x_train , y_train)
 
-    
+    cv_scores = cross_val_score(model, x_train, y_train, cv=5)
+    print(f"Cross-Validation Scores: {cv_scores}")
+    print(f"Mean Cross-Validation Score: {np.mean(cv_scores)}")
+
     y_pred = model.predict(x_test)
     
     print(f"Algoritmo: {model.__class__.__name__}")
     print("Matriz de Confusão")
     print(confusion_matrix(y_test, y_pred))
+    # plot_confusion_matrix(y_test, y_pred, classes=['BERHI', 'DEGLET', 'DOKOL', 'IRAQI', 'ROTANA', 'SAFAVI', 'SOGAY'])
     print("\n Relatório de Classificação")
     print(classification_report(y_test, y_pred))
+
+    # errors = np.where(y_test != y_pred)[0]
+    # print("Exemplos de erros:")
+    # for i in errors[:5]:  # Exibindo os primeiros 5 erros
+    #     print(f"Index: {i}, Predicted: {y_pred[i]}, Actual: {y_test.iloc[i]}, Features: {x_test.iloc[i]}")
     print("--------------------------------------------------------")
+
+    importances = model.feature_importances_
+    features = x_train.columns
+    feature_importance = pd.DataFrame({'Feature': features, 'Importance': importances})
+    feature_importance = feature_importance.sort_values(by='Importance', ascending=False)
+    print(feature_importance)
     
     # save the model in file
     dump(model, 'treeClassifierModel.joblib')
@@ -99,10 +119,10 @@ def randomForestClassifier(x_train, x_test, y_train, y_test) :
         'n_estimators': [95,100, 105],
         'max_depth': [None, 8, 10, 15],
         'min_samples_split': [2, 4, 3, 5, 6, 7],
-        'min_samples_leaf': [1, 2, 3, 4]
+        'min_samples_leaf': [2, 3, 4]
     }
 
-    grid_search = GridSearchCV(RandomForestClassifier(), param_grid=param_grid, cv=5, scoring='accuracy', n_jobs=1)
+    grid_search = RandomizedSearchCV(RandomForestClassifier(), param_distributions=param_grid, n_iter=100, cv=5, scoring='accuracy', n_jobs=-1)
     grid_search.fit(x_train,y_train)
     print("Grid for the RandomForest")
     print(" ")
@@ -116,6 +136,9 @@ def randomForestClassifier(x_train, x_test, y_train, y_test) :
     model = RandomForestClassifier(**grid_search.best_params_)
     model.fit(x_train , y_train)
 
+    cv_scores = cross_val_score(model, x_train, y_train, cv=5)
+    print(f"Cross-Validation Scores: {cv_scores}")
+    print(f"Mean Cross-Validation Score: {np.mean(cv_scores)}")
     
     y_pred = model.predict(x_test)
     
@@ -129,6 +152,16 @@ def randomForestClassifier(x_train, x_test, y_train, y_test) :
     # save the model in file
     dump(model, 'randomForestClassifierModel.joblib')
     
+
+def plot_confusion_matrix(y_test, y_pred, classes):
+    cm = confusion_matrix(y_test, y_pred)
+    plt.figure(figsize=(10, 7))
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=classes, yticklabels=classes)
+    plt.xlabel('Predicted')
+    plt.ylabel('True')
+    plt.show()
+
+
 def load_model(filename):
     loaded_model = load(filename)
     return loaded_model
