@@ -3,6 +3,7 @@ import joblib
 import pandas as pd
 import json
 from flask_cors import CORS
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -63,10 +64,15 @@ def classify_fruits():
 
 @app.route('/modelScores', methods=['GET'])
 def returnSavedJsonScores():
-    scores = open('jsonScores/lastPostResponse.json')
-    scores = json.load(scores)
-    return jsonify(scores)
-
+    try:
+        if os.path.exists('jsonScores/lastPostResponse.json'):
+            with open('jsonScores/lastPostResponse.json', 'r', encoding='utf=-8') as f:
+                scores = json.load(f)
+            return jsonify(scores)
+        else:
+            return jsonify({'Erro': 'arquivo não foi encontrado.'}), 404
+    except Exception as e:
+        return jsonify({'Erro': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
