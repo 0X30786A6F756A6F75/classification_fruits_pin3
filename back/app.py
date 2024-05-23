@@ -35,10 +35,7 @@ def classify_fruits():
                 if missing_features:
                     return jsonify({'Erro': f'Colunas ausentes no arquivo CSV: {missing_features}'}), 400
 
-                features = df[['area','perimetro','eixo_maior','eixo_menor','excentricidade','eqdiasq','solidez','area_convexa',
-                               'extensao','proporcao','redondidade','compactidade','fator_forma_1','fator_forma_2','fator_forma_3',
-                               'fator_forma_4','RR_media','RG_media','RB_media','RR_dev','RG_dev','RB_dev','RR_inclinacao','RG_inclinacao',
-                               'RB_inclinacao','RR_curtose','RG_curtose','RB_curtose','RR_entropia','RG_entropia','RB_entropia','RR_all','RG_all','RB_all']]
+                features = df[Expected_features]
 
                 predictions = model.predict(features)
 
