@@ -11,7 +11,10 @@ ALLOWED_EXTENSIONS = set(['csv'])
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
+Expected_features = ['area','perimetro','eixo_maior','eixo_menor','excentricidade','eqdiasq','solidez','area_convexa',
+                     'extensao','proporcao','redondidade','compactidade','fator_forma_1','fator_forma_2','fator_forma_3',
+                     'fator_forma_4','RR_media','RG_media','RB_media','RR_dev','RG_dev','RB_dev','RR_inclinacao','RG_inclinacao',
+                     'RB_inclinacao','RR_curtose','RG_curtose','RB_curtose','RR_entropia','RG_entropia','RB_entropia','RR_all','RG_all','RB_all']
 # Passar o path do modelo a ser usado
 model = joblib.load('randomForestClassifierModel.joblib')
 
@@ -28,7 +31,14 @@ def classify_fruits():
             try:
                 df = pd.read_csv(file)
 
-                features = df[['area','perimetro','eixo_maior','eixo_menor','excentricidade','eqdiasq','solidez','area_convexa','extensao','proporcao','redondidade','compactidade','fator_forma_1','fator_forma_2','fator_forma_3','fator_forma_4','RR_media','RG_media','RB_media','RR_dev','RG_dev','RB_dev','RR_inclinacao','RG_inclinacao','RB_inclinacao','RR_curtose','RG_curtose','RB_curtose','RR_entropia','RG_entropia','RB_entropia','RR_all','RG_all','RB_all']]
+                missing_features = [feature for feature in Expected_features if feature not in df.columns]
+                if missing_features:
+                    return jsonify({'Erro': f'Colunas ausentes no arquivo CSV: {missing_features}'}), 400
+
+                features = df[['area','perimetro','eixo_maior','eixo_menor','excentricidade','eqdiasq','solidez','area_convexa',
+                               'extensao','proporcao','redondidade','compactidade','fator_forma_1','fator_forma_2','fator_forma_3',
+                               'fator_forma_4','RR_media','RG_media','RB_media','RR_dev','RG_dev','RB_dev','RR_inclinacao','RG_inclinacao',
+                               'RB_inclinacao','RR_curtose','RG_curtose','RB_curtose','RR_entropia','RG_entropia','RB_entropia','RR_all','RG_all','RB_all']]
 
                 predictions = model.predict(features)
 
