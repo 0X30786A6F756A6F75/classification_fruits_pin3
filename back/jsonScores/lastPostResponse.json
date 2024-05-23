@@ -1,0 +1,18 @@
+{
+    "predictions": [
+        "BERHI",
+        "DEGLET",
+        "IRAQI",
+        "ROTANA",
+        "SAFAVI",
+        "SOGAY"
+    ],
+    "scores": {
+        "BERHI": 1,
+        "DEGLET": 1,
+        "IRAQI": 1,
+        "ROTANA": 1,
+        "SAFAVI": 1,
+        "SOGAY": 1
+    }
+}

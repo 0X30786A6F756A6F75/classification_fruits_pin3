@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request, url_for
 import joblib
 import pandas as pd
+import json
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -52,10 +53,20 @@ def classify_fruits():
                     'scores': scores
                 }
 
+                with open('jsonScores/lastPostResponse.json', 'w', encoding='utf-8') as f:
+                    json.dump(response, f, ensure_ascii=False, indent= 4)
+
                 return jsonify(response)
 
             except Exception as e:
                 return jsonify({'Erro': str(e)}), 500
+
+@app.route('/modelScores', methods=['GET'])
+def returnSavedJsonScores():
+    scores = open('jsonScores/lastPostResponse.json')
+    scores = json.load(scores)
+    return jsonify(scores)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
