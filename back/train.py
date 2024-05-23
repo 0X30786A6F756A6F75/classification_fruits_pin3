@@ -1,16 +1,10 @@
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, RandomizedSearchCV, cross_val_score
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import confusion_matrix
-from sklearn.preprocessing import minmax_scale
-from sklearn.preprocessing import LabelEncoder 
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix, classification_report
-from sklearn.model_selection import train_test_split
-from imblearn.under_sampling import RandomUnderSampler
-from sklearn.model_selection import RandomizedSearchCV, cross_val_score
+from sklearn.preprocessing import LabelEncoder 
+from sklearn.ensemble import RandomForestClassifier
 from joblib import dump,load
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -21,8 +15,6 @@ def main():
     data["classe"].unique()
     x = data.drop(['classe'], axis =1)
     y = data['classe']
-
-    x = minmax_scale(x)
     print(x)
 
     # View table
@@ -46,8 +38,6 @@ def view_table(x, y):
 
 def train_model(x,y):
     smote = SMOTE(sampling_strategy='auto', random_state=None)
-    # rus = RandomUnderSampler(sampling_strategy='majority', replacement=True, random_state=None)
-    # x_resampled, y_resampled = rus.fit_resample(x,y)
     x_resampled, y_resampled = smote.fit_resample(x,y)
     print("Original Dataset Shape:")
     print(x.shape)

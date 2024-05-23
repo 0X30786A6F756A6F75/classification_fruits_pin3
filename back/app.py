@@ -1,9 +1,6 @@
-import os
 from flask import Flask, jsonify, request, url_for
-from werkzeug.utils import secure_filename
 import joblib
 import pandas as pd
-from datetime import datetime
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -16,9 +13,9 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Passar o path do modelo a ser usado
-model = joblib.load('treeClassifierModel.joblib')
+model = joblib.load('randomForestClassifierModel.joblib')
 
-@app.route('/classify', methods=['GET', 'POST'])
+@app.route('/classify', methods=['POST'])
 def classify_fruits():
     if request.method == 'POST':
         if 'file' not in request.files:
@@ -28,10 +25,6 @@ def classify_fruits():
         if file.filename == '':
             return jsonify({'Erro': 'Nenhum arquivo foi enviado na request'}), 400
         if file and allowed_file(file.filename):
-            # filename = secure_filename(file.filename)
-            # new_filename = f'{filename.split(".")[0]}_{str(datetime.now())}.csv'
-            # save_location = os.path.join('savedCsv', new_filename)
-            # file.save(save_location)
             try:
                 df = pd.read_csv(file)
 
