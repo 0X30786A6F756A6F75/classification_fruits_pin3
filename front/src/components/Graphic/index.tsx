@@ -1,11 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Chart, { ChartData } from "chart.js/auto";
+import axios from "axios";
 
 type ChartType = 'bar' | 'line' | 'pie';
 
 interface GraphicProps { }
 
-const randomData = (length: number) => Array.from({ length }, () => Math.floor(Math.random() * 100));
 const backgroundColor = [
   "rgba(255, 99, 132, 0.2)",
   "rgba(54, 162, 235, 0.2)",
@@ -23,10 +23,17 @@ const borderColor = [
   "rgba(255, 159, 64, 1)"
 ];
 
+interface IRelation {
+  predictions: string[];
+  // type object
+  scores: { [key: string]: number };
+}
+
 export const Graphic: React.FC<GraphicProps> = () => {
   const barChartRef = useRef<HTMLCanvasElement>(null);
-	const distributionChartRef = useRef<HTMLCanvasElement>(null);
+  const distributionChartRef = useRef<HTMLCanvasElement>(null);
   const pieChartRef = useRef<HTMLCanvasElement>(null);
+  const [relation, setRelation] = useState<IRelation>();
 
   const chartInstances = useRef<{ [key in ChartType]: Chart | null }>({
     bar: null,
@@ -60,13 +67,30 @@ export const Graphic: React.FC<GraphicProps> = () => {
   };
 
   useEffect(() => {
-    const columns = ["Berthi", "Dokol", "IRAQI", "Rotana", "Safavi", "Sogay"];
+    axios
+      .get("http://localhost:5000/modelScores")
+      .then((response) => {
+        setRelation(response.data);
+      }).catch((error) => {
+        console.error(error);
+      });
+
+    const columns = ["BERHI", "DOKOL", "IRAQI", "ROTANA", "SAFAVI", "SOGAY"];
+    // read the scores and show the fruits data
+    const data = [
+      relation?.scores?.BERHI || 0,
+      relation?.scores?.DOKOL || 0,
+      relation?.scores?.IRAQI || 0,
+      relation?.scores?.ROTANA || 0,
+      relation?.scores?.SAFAVI || 0,
+      relation?.scores?.SOGAY || 0
+    ];
 
     const barChartData: ChartData = {
       labels: columns,
       datasets: [{
         label: "Frutas",
-        data: randomData(columns.length),
+        data: data,
         backgroundColor,
         borderColor,
         borderWidth: 1,
@@ -77,7 +101,7 @@ export const Graphic: React.FC<GraphicProps> = () => {
       labels: columns,
       datasets: [{
         label: "Frutas",
-        data: randomData(columns.length),
+        data: data,
         fill: false,
         borderColor: "rgba(255, 99, 132, 1)",
         borderWidth: 1,
@@ -87,7 +111,7 @@ export const Graphic: React.FC<GraphicProps> = () => {
     const pieChartData: ChartData = {
       labels: columns,
       datasets: [{
-        data: [12, 19, 3, 5, 2, 3],
+        data: data,
         backgroundColor,
         borderColor,
         borderWidth: 1
@@ -104,7 +128,7 @@ export const Graphic: React.FC<GraphicProps> = () => {
       destroyChart('line');
       destroyChart('pie');
     };
-  }, [initChart]);
+  }, []);
 
   return (
     <div className="container-fluid" id="content-main">
@@ -127,5 +151,5 @@ export const Graphic: React.FC<GraphicProps> = () => {
         </div>
       </div>
     </div>
-		);
+  );
 };
