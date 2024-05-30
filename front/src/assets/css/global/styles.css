@@ -1,19 +1,12 @@
 body {
   font-family: "Arial, Helvetica, sans-serif";
   background-color: "#00000";
-  margin: 0;
-  padding: 0;
+  margin: 0!important;
+  padding: 0!important;
   color: #000;
 }
 body, html {
   height: 100%;
-}
-
-.container,
-.container-fluid
-{
-  padding: 0px;
-  margin: 0;
 }
 
 /* HEADER */
@@ -122,4 +115,16 @@ footer {
     display:table-cell;
     padding-left:10px;
     vertical-align:middle;
+}
+
+/* Result */
+.col-title {
+  width: 100%;
+  text-align: center;
+  display: inline;
+  justify-content: center;
+  align-items: center;
+}
+table {
+  text-align: center;
 }

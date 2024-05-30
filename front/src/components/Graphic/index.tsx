@@ -1,10 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Chart, { ChartData } from "chart.js/auto";
-import axios from "axios";
+import { IPredictionsFruits } from "types";
 
 type ChartType = 'bar' | 'line' | 'pie';
-
-interface GraphicProps { }
 
 const backgroundColor = [
   "rgba(255, 99, 132, 0.2)",
@@ -23,17 +21,10 @@ const borderColor = [
   "rgba(255, 159, 64, 1)"
 ];
 
-interface IRelation {
-  predictions: string[];
-  // type object
-  scores: { [key: string]: number };
-}
-
-export const Graphic: React.FC<GraphicProps> = () => {
+export const Graphic: React.FC<IPredictionsFruits> = ({ predictions, scores }) => {
   const barChartRef = useRef<HTMLCanvasElement>(null);
   const distributionChartRef = useRef<HTMLCanvasElement>(null);
   const pieChartRef = useRef<HTMLCanvasElement>(null);
-  const [relation, setRelation] = useState<IRelation>();
 
   const chartInstances = useRef<{ [key in ChartType]: Chart | null }>({
     bar: null,
@@ -67,23 +58,15 @@ export const Graphic: React.FC<GraphicProps> = () => {
   };
 
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/modelScores")
-      .then((response) => {
-        setRelation(response.data);
-      }).catch((error) => {
-        console.error(error);
-      });
-
     const columns = ["BERHI", "DOKOL", "IRAQI", "ROTANA", "SAFAVI", "SOGAY"];
-    // read the scores and show the fruits data
+
     const data = [
-      relation?.scores?.BERHI || 0,
-      relation?.scores?.DOKOL || 0,
-      relation?.scores?.IRAQI || 0,
-      relation?.scores?.ROTANA || 0,
-      relation?.scores?.SAFAVI || 0,
-      relation?.scores?.SOGAY || 0
+      scores?.BERHI || 0,
+      scores?.DOKOL || 0,
+      scores?.IRAQI || 0,
+      scores?.ROTANA || 0,
+      scores?.SAFAVI || 0,
+      scores?.SOGAY || 0
     ];
 
     const barChartData: ChartData = {
@@ -128,27 +111,32 @@ export const Graphic: React.FC<GraphicProps> = () => {
       destroyChart('line');
       destroyChart('pie');
     };
-  }, []);
+  }, [predictions, scores]);
 
   return (
-    <div className="container-fluid" id="content-main">
+    <div className="container-fluid">
       <div className="row justify-content-center">
-        <div className="col-12 text-center mb-4 mx-2">
-          <h1 className="h1">Gráficos</h1>
+        <div className="col-sm">
+          <h1 className="title">Gráficos</h1>
         </div>
-        <div className="col-12 col-lg-6 mb-4 mb-lg-2 mx-2">
+      </div>
+      <div className="row justify-content-center">
+        <div className="col-6">
           <canvas ref={barChartRef} width="600" height="400"></canvas>
           <hr />
         </div>
       </div>
-      <div className="row justify-content-center mt-4">
-        <div className="col-8 col-lg-4 col-sm-10 mx-2 mb-4">
+      <br />
+      <div className="row justify-content-center">
+        <div className="col-1"></div>
+        <div className="col-4">
           <canvas ref={distributionChartRef} width="300" height="300"></canvas>
         </div>
         <div className="col-1"></div>
-        <div className="col-8 col-lg-4 col-sm-10 mx-2 mb-4">
+        <div className="col-4">
           <canvas ref={pieChartRef} width="300" height="300"></canvas>
         </div>
+        <div className="col-1"></div>
       </div>
     </div>
   );

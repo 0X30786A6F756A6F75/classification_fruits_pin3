@@ -1,17 +1,24 @@
 import React from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { IPredictionsFruits } from "types";
 
 export function FormScreen() {
+  const navigate = useNavigate();
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
-    try {
-      const response = await axios.post("http://localhost:5000/classify", formData);
-      console.log(response.data);
-    } catch (error) {
-      console.error(error);
-    }
+    axios
+      .post("http://localhost:5000/classify", formData)
+      .then((response) => {
+        const predictionFruits  : IPredictionsFruits = response.data;
+
+        navigate("/result", { state: { predictionFruits } });
+      }).catch((error) => {
+        console.error(error);
+      });
   };
 
   return (
