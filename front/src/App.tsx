@@ -15,7 +15,6 @@ function App() {
         <Route path="/form" element={<FormScreen />} />
         <Route path="/result" element={<ResultScreen />} />
       </Routes>
-      <Footer />
     </>
   )
 }
