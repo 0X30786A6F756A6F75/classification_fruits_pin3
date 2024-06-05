@@ -74,6 +74,10 @@ def treeClassifier(x_train, x_test, y_train, y_test) :
 
     model.fit(x_train , y_train)
 
+    # script DE COMPARAÇÃO DO MODELO
+    np.savetxt('tree_y_test.csv', y_test, delimiter=',', fmt='%s')
+    np.savetxt('tree_x_test.csv', x_test, delimiter=',', fmt='%s')
+
     cv_scores = cross_val_score(model, x_train, y_train, cv=5)
     print(f"Cross-Validation Scores: {cv_scores}")
     print(f"Mean Cross-Validation Score: {np.mean(cv_scores)}")
@@ -129,6 +133,10 @@ def randomForestClassifier(x_train, x_test, y_train, y_test) :
     cv_scores = cross_val_score(model, x_train, y_train, cv=5)
     print(f"Cross-Validation Scores: {cv_scores}")
     print(f"Mean Cross-Validation Score: {np.mean(cv_scores)}")
+
+    # script DE COMPARAÇÃO DO MODELO
+    np.savetxt('forest_y_test.csv', y_test, delimiter=',', fmt='%s')
+    np.savetxt('forest_x_test.csv', x_test, delimiter=',', fmt='%s')
     
     y_pred = model.predict(x_test)
     
