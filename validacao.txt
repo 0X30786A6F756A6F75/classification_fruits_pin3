@@ -1,0 +1,5 @@
+frutas1.csv -> 2 a cada classe, sendo a ordem (BERHI, DEGLET, DOKOL, IRAQI, SAFAVI, SOGAY, ROTANA)
+
+frutas2.csv -> (BERHI, SOGAY, BERHI, DOKOL, IRAQI, SOGAY, DEGLET, ROTANA, SAFAVI, DEGLET)
+
+frutas3.csv -> (BERHI(2), DEGLET(15), BERHI(28), ROTANA(40))

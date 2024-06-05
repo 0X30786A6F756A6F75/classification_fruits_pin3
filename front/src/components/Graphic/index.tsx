@@ -10,7 +10,8 @@ const backgroundColor = [
   "rgba(255, 206, 86, 0.2)",
   "rgba(75, 192, 192, 0.2)",
   "rgba(153, 102, 255, 0.2)",
-  "rgba(255, 159, 64, 0.2)"
+  "rgba(255, 120, 80, 0.2)",
+  "rgba(255, 255, 80, 0.2)"
 ];
 const borderColor = [
   "rgba(255, 99, 132, 1)",
@@ -18,7 +19,8 @@ const borderColor = [
   "rgba(255, 206, 86, 1)",
   "rgba(75, 192, 192, 1)",
   "rgba(153, 102, 255, 1)",
-  "rgba(255, 159, 64, 1)"
+  "rgba(255, 255, 80, 1)",
+  "rgba(255, 255, 80, 1)"
 ];
 
 export const Graphic: React.FC<IPredictionsFruits> = ({ predictions, scores }) => {
@@ -58,10 +60,11 @@ export const Graphic: React.FC<IPredictionsFruits> = ({ predictions, scores }) =
   };
 
   useEffect(() => {
-    const columns = ["BERHI", "DOKOL", "IRAQI", "ROTANA", "SAFAVI", "SOGAY"];
+    const columns = ["BERHI", "DEGLET", "DOKOL", "IRAQI", "ROTANA", "SAFAVI", "SOGAY"];
 
     const data = [
       scores?.BERHI || 0,
+      scores?.DEGLET || 0,
       scores?.DOKOL || 0,
       scores?.IRAQI || 0,
       scores?.ROTANA || 0,

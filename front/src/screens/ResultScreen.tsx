@@ -31,7 +31,7 @@ export const ResultScreen: React.FC = () => {
               <tbody>
                 {predictionFruits.predictions.map((fruit, index) => (
                   <tr>
-                    <th scope="row">{index}</th>
+                    <th scope="row">{index + 1}</th>
                     <td>{fruit}</td>
                   </tr>
                 ))}
