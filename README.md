@@ -1,4 +1,21 @@
-# Roda back
+# Instalação: DOCKER
+1. Buildar container
+```bash
+$ docker-compose build
+```
+2. Rodar 
+```bash
+$ docker-compose up
+```
+
+Alternativa para builda e roda em sequência:
+```bash
+$ docker-compose up --build
+```
+
+# Instalação: MANUAL
+
+## Roda back
 1. Caminhe até o projeto de back
 ```bash
 $ cd back
@@ -17,7 +34,7 @@ $ pip install -r requiremets.txt
 $ flask run
 ```
 ---
-# Roda front
+## Roda front
 1. Caminhe até o projeto de front
 ```
 $ yarn install

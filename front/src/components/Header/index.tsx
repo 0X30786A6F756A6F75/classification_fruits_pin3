@@ -18,7 +18,7 @@ export function Header() {
               <Link to="/form" className="nav-link">Verificar Frutas</Link>
             </li>
             <li className="nav-item">
-              <Link to="/graphics" className="nav-link">Graficos</Link>
+              <Link to="/" className="nav-link">Graficos</Link>
             </li>
           </ul>
         </div>
