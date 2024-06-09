@@ -38,7 +38,7 @@ def train_model(x,y):
 
 
 def treeClassifier(x_train, x_test, y_train, y_test) :   
-    param_grid_dt = {
+    param_random_dt = {
         'criterion': ['gini', 'entropy'],
         'splitter': ['best', 'random'],
         'max_depth': [None, 8, 9, 10, 11, 12, 15, 20],
@@ -46,26 +46,28 @@ def treeClassifier(x_train, x_test, y_train, y_test) :
         'min_samples_leaf': [2, 3, 4, 5, 6, 10]
     }
 
-    grid_search_dt = RandomizedSearchCV(estimator=DecisionTreeClassifier(), param_distributions=param_grid_dt, n_iter=100, cv=5, scoring='accuracy', n_jobs=-1)
+    random_search_dt = RandomizedSearchCV(estimator=DecisionTreeClassifier(), param_distributions=param_random_dt, n_iter=300, cv=5, scoring='accuracy', n_jobs=-1)
 
-    grid_search_dt.fit(x_train, y_train)
+    random_search_dt.fit(x_train, y_train)
     
     print("Grid for the Decision Tree")
     print(" ")
     print("Best Hyperparameters:")
-    print(grid_search_dt.best_params_)
+    print(random_search_dt.best_params_)
     print(" ")
     print("Performance on the Validation Set:")
-    print(grid_search_dt.best_score_)
+    print(random_search_dt.best_score_)
     print(" ")
 
-    model =  DecisionTreeClassifier(**grid_search_dt.best_params_)
+    model =  DecisionTreeClassifier(**random_search_dt.best_params_)
 
     model.fit(x_train , y_train)
 
     # script DE COMPARAÇÃO DO MODELO
-    np.savetxt('tree_y_test.csv', y_test, delimiter=',', fmt='%s')
-    np.savetxt('tree_x_test.csv', x_test, delimiter=',', fmt='%s')
+    x_test.to_csv('tree_x_test.csv', index=False)
+    y_test.to_csv('tree_y_test.csv', index=False)
+    # np.savetxt('tree_y_test.csv', y_test, delimiter=',', fmt='%s')
+    # np.savetxt('tree_x_test.csv', x_test, delimiter=',', fmt='%s')
 
     cv_scores = cross_val_score(model, x_train, y_train, cv=5)
     print(f"Cross-Validation Scores: {cv_scores}")

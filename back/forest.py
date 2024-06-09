@@ -38,7 +38,7 @@ def train_model(x,y):
 
 
 def randomForestClassifier(x_train, x_test, y_train, y_test) :
-    param_grid = {
+    param_random = {
         'bootstrap' : [True, False],
         'n_estimators': [95,100, 105],
         'max_depth': [None, 8, 10, 15],
@@ -46,18 +46,19 @@ def randomForestClassifier(x_train, x_test, y_train, y_test) :
         'min_samples_leaf': [2, 3, 4]
     }
 
-    grid_search = RandomizedSearchCV(RandomForestClassifier(), param_distributions=param_grid, n_iter=100, cv=5, scoring='accuracy', n_jobs=-1)
-    grid_search.fit(x_train,y_train)
+    random_search = RandomizedSearchCV(RandomForestClassifier(), param_distributions=param_random, n_iter=300, cv=5, scoring='accuracy', n_jobs=-1)
+    random_search.fit(x_train,y_train)
+
     print("Grid for the RandomForest")
     print(" ")
     print("Best Hyperparameters:")
-    print(grid_search.best_params_)
+    print(random_search.best_params_)
     print(" ")
     print("Performance on the Validation Set:")
-    print(grid_search.best_score_)
+    print(random_search.best_score_)
     print(" ")
 
-    model = RandomForestClassifier(**grid_search.best_params_)
+    model = RandomForestClassifier(**random_search.best_params_)
     model.fit(x_train , y_train)
 
     cv_scores = cross_val_score(model, x_train, y_train, cv=5)
@@ -65,8 +66,10 @@ def randomForestClassifier(x_train, x_test, y_train, y_test) :
     print(f"Mean Cross-Validation Score: {np.mean(cv_scores)}")
 
     # script DE COMPARAÇÃO DO MODELO
-    np.savetxt('forest_y_test.csv', y_test, delimiter=',', fmt='%s')
-    np.savetxt('forest_x_test.csv', x_test, delimiter=',', fmt='%s')
+    x_test.to_csv('forest_x_test.csv', index=False)
+    y_test.to_csv('forest_y_test.csv', index=False)
+    # np.savetxt('forest_y_test.csv', y_test, delimiter=',', fmt='%s')
+    # np.savetxt('forest_x_test.csv', x_test, delimiter=',', fmt='%s')
     
     y_pred = model.predict(x_test)
     

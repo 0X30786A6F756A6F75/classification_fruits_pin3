@@ -12,6 +12,8 @@ Alternativa para builda e roda em sequência:
 ```bash
 $ docker-compose up --build
 ```
+A aplicaçao Web pode ser acessada por este [link](http://localhost:3000)
+Ou apenas abrindo o Localhost na porta 3000
 
 # Instalação: MANUAL
 
