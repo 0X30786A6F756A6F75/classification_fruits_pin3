@@ -27,13 +27,13 @@ def main():
     train_model(x,y)
 
 def train_model(x,y):
-    smote = SMOTE(sampling_strategy='auto', random_state=None)
+    smote = SMOTE(sampling_strategy='auto', random_state=12)
     x_resampled, y_resampled = smote.fit_resample(x,y)
     # print("Original Dataset Shape:")
     # print(x.shape)
     # print("Resampled Dataset:")
     # print(x_resampled.shape)
-    x_train, x_test, y_train, y_test = train_test_split(x_resampled, y_resampled, test_size=0.3, random_state=None, shuffle=True, stratify=None)
+    x_train, x_test, y_train, y_test = train_test_split(x_resampled, y_resampled, test_size=0.3, random_state=12, shuffle=True, stratify=None)
     randomForestClassifier(x_train, x_test, y_train, y_test)
 
 
@@ -64,12 +64,6 @@ def randomForestClassifier(x_train, x_test, y_train, y_test) :
     cv_scores = cross_val_score(model, x_train, y_train, cv=5)
     print(f"Cross-Validation Scores: {cv_scores}")
     print(f"Mean Cross-Validation Score: {np.mean(cv_scores)}")
-
-    # script DE COMPARAÇÃO DO MODELO
-    x_test.to_csv('forest_x_test.csv', index=False)
-    y_test.to_csv('forest_y_test.csv', index=False)
-    # np.savetxt('forest_y_test.csv', y_test, delimiter=',', fmt='%s')
-    # np.savetxt('forest_x_test.csv', x_test, delimiter=',', fmt='%s')
     
     y_pred = model.predict(x_test)
     

@@ -27,13 +27,13 @@ def main():
     train_model(x,y)
 
 def train_model(x,y):
-    smote = SMOTE(sampling_strategy='auto', random_state=None)
+    smote = SMOTE(sampling_strategy='auto', random_state=12)
     x_resampled, y_resampled = smote.fit_resample(x,y)
     # print("Original Dataset Shape:")
     # print(x.shape)
     # print("Resampled Dataset:")
     # print(x_resampled.shape)
-    x_train, x_test, y_train, y_test = train_test_split(x_resampled, y_resampled, test_size=0.3, random_state=None, shuffle=True, stratify=None)
+    x_train, x_test, y_train, y_test = train_test_split(x_resampled, y_resampled, test_size=0.3, random_state=12, shuffle=True, stratify=None)
     treeClassifier(x_train, x_test, y_train, y_test)
 
 
@@ -64,10 +64,8 @@ def treeClassifier(x_train, x_test, y_train, y_test) :
     model.fit(x_train , y_train)
 
     # script DE COMPARAÇÃO DO MODELO
-    x_test.to_csv('tree_x_test.csv', index=False)
-    y_test.to_csv('tree_y_test.csv', index=False)
-    # np.savetxt('tree_y_test.csv', y_test, delimiter=',', fmt='%s')
-    # np.savetxt('tree_x_test.csv', x_test, delimiter=',', fmt='%s')
+    x_test.to_csv('x_test.csv', index=False)
+    y_test.to_csv('y_test.csv', index=False)
 
     cv_scores = cross_val_score(model, x_train, y_train, cv=5)
     print(f"Cross-Validation Scores: {cv_scores}")
