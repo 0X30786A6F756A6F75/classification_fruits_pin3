@@ -6,7 +6,8 @@ pip
 
 ## Passo a Passo
 1. Ativando o ambiente virtual
-```bash $ cd back/
+```bash 
+$ cd back/
 $ python3 -m venv env
 $ source env/bin/activate
 ```
