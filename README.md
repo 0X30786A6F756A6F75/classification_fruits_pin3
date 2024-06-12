@@ -1,4 +1,4 @@
-# Treinamento do Modelo e script de comparação
+# Rodando: treinamento do modelo e script de comparação
 ## Depedências necessárias para rodar modelo e script de comparação
 Necessário:
 python
@@ -27,7 +27,7 @@ $ python forest.py
 $ python compare.py
 ```
 
-# Instação FRONT e BACK
+# Rodando: FRONT e BACK
 ## VIA DOCKER 
 Necessário:
 docker
